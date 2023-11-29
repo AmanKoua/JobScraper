@@ -24,7 +24,7 @@ var HTMLParser = require("node-html-parser")
 var JobKeys = require("./jobKeys.js");
 
 let fullStackOnetURL = "https://www.onetonline.org/link/localjobs/15-1254.00?zip="; // add zip at the end. "15-1254" represents the web developer job category
-let indeedCustomURL = "https://www.indeed.com/jobs?q=full++stack+developer&l=Detroit%2C+MI&from=searchOnHP&vjk=ba632b886e162fbe";
+// let indeedCustomURL = "https://www.indeed.com/jobs"; // https://www.indeed.com/jobs?q=full++stack+developer&l=Detroit%2C+MI&from=searchOnHP&vjk=ba632b886e162fbe
 
 let supportedSites = ["onet", "indeed"];
 let zipCode = undefined;
@@ -49,15 +49,9 @@ let main = async () => {
         return;
     }
 
-    // let supportedSites = ["onet", "indeed"];
-    // let zipCode = undefined;
-    // let type = undefined;
-    // let position = undefined;
-    // let location = undefined;
-    // let site = undefined;
-
     if (!supportedSites.includes(process.argv[2])) {
         console.error(`Site ${process.argv[2]} is not supported!`);
+        return;
     }
     else {
         site = process.argv[2];
@@ -74,12 +68,9 @@ let main = async () => {
             break;
     }
 
-
     if (process.argv.length > 4) {
         minMatchCount = process.argv[5];
     }
-
-    // TODO : Stopped here!
 
     if (site == "onet") {
         console.log(site, zipCode, type, minMatchCount);
@@ -98,11 +89,21 @@ let main = async () => {
             break;
     }
 
-    if (minMatchCount != undefined) {
-        console.log(`getting jobs for ZIP : ${zipCode} of type : ${type} with min match count: ${minMatchCount}`);
+    if (site == "onet") {
+        if (minMatchCount != undefined) {
+            console.log(`getting jobs for ZIP : ${zipCode} of type : ${type} with min match count: ${minMatchCount}`);
+        }
+        else {
+            console.log(`getting jobs for ZIP : ${zipCode} of type : ${type}`);
+        }
     }
-    else {
-        console.log(`getting jobs for ZIP : ${zipCode} of type : ${type}`);
+    else if (site == "indeed") {
+        if (minMatchCount != undefined) {
+            console.log(`getting jobs for location : ${location} of type : ${type} with min match count: ${minMatchCount}`);
+        }
+        else {
+            console.log(`getting jobs for location : ${location} of type : ${type}`);
+        }
     }
 
     console.log("fetching data, please wait!");
@@ -118,7 +119,6 @@ let main = async () => {
             return;
             break;
     }
-
 
     console.log(`Sorting job data by match count!`);
     sortJobsData();
