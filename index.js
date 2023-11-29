@@ -1,10 +1,17 @@
 /*
 
+    NEW
+
     Usage:
-        format : node index.js {ZipCode} {KeySet} {minMatchCount (optional)}
+        format : 
+            node index.js onet {ZipCode} {KeySet} {minMatchCount (optional)}
+            node index.js indeed {position} {location} {{minMatchCount (optional)}}
+
         examples :
-            node index.js 48323 fullstack
-            node index.js 48323 fullstack 15
+            node index.js onet 48323 fullstack
+            node index.js onet 48323 fullstack 15
+            node index.js indeed {position} {location} {{minMatchCount (optional)}}
+
 
         -zipcode : your zip code
         -keySet: desired keyset
@@ -16,13 +23,12 @@
 var HTMLParser = require("node-html-parser")
 var JobKeys = require("./jobKeys.js");
 
-let minArgsLength = 4;
+let minArgsLength = 5;
 let minMatchCount = undefined;
 let jobsData = []; // Object {matchCount, matchMap}
 let sortedJobsData = [];
-// https://www.onetonline.org/link/localjobs/15-1254.00?zip={zipCode}&p={page}
-let baseURL = "https://www.onetonline.org";
-let fullStackURL = "https://www.onetonline.org/link/localjobs/15-1254.00?zip="; // add zip at the end
+let baseOnetURL = "https://www.onetonline.org";
+let fullStackOnetURL = "https://www.onetonline.org/link/localjobs/15-1254.00?zip="; // add zip at the end. "15-1254" represents the web developer job category
 let keys = undefined;
 let fullStackKeys = JobKeys.fullStackKeys
 
@@ -33,15 +39,29 @@ let main = async () => {
         return;
     }
 
-    let zipCode;
-    let type;
+    let supportedSites = ["onet", "indeed"];
+    let zipCode = undefined;
+    let type = undefined;
+    let position = undefined;
+    let location = undefined;
+    let site = undefined;
 
-    zipCode = process.argv[2];
-    type = process.argv[3];
+    if (!supportedSites.includes(process.argv[3])) {
+        console.error(`Site ${process.argv[3]} is not supported!`);
+    }
+    else {
+        site = process.argv[3];
+    }
+
+    zipCode = process.argv[3];
+    type = process.argv[4];
 
     if (process.argv.length > 4) {
-        minMatchCount = process.argv[4];
+        minMatchCount = process.argv[5];
     }
+
+    console.log(site, type, zipCode, position, location);
+    return;
 
     if (minMatchCount != undefined) {
         console.log(`getting jobs for ZIP : ${zipCode} of type : ${type} with min match count: ${minMatchCount}`);
@@ -74,7 +94,7 @@ let main = async () => {
     while (isPageValid) {
 
         console.log(`fetching page ${pageIdx} ...`);
-        response = await fetch(`${fullStackURL}${zipCode}&p=${pageIdx}`);
+        response = await fetch(`${fullStackOnetURL}${zipCode}&p=${pageIdx}`);
 
         if (!response.ok) {
             console.error("error fetching job page!");
@@ -113,7 +133,7 @@ let main = async () => {
         }
 
         let rawAttr = tableRows[i].childNodes[1].childNodes[0].rawAttrs.split(" ")[0];
-        let jobURL = `${baseURL}${rawAttr.substring(6, rawAttr.length - 1)}`;
+        let jobURL = `${baseOnetURL}${rawAttr.substring(6, rawAttr.length - 1)}`;
         jobURLs.push(jobURL);
     }
 
