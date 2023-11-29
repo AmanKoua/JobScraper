@@ -23,17 +23,24 @@
 var HTMLParser = require("node-html-parser")
 var JobKeys = require("./jobKeys.js");
 
-let minArgsLength = 5;
-let minMatchCount = undefined;
+let fullStackOnetURL = "https://www.onetonline.org/link/localjobs/15-1254.00?zip="; // add zip at the end. "15-1254" represents the web developer job category
+let indeedCustomURL = "https://www.indeed.com/jobs?q=full++stack+developer&l=Detroit%2C+MI&from=searchOnHP&vjk=ba632b886e162fbe";
+
+let supportedSites = ["onet", "indeed"];
+let zipCode = undefined;
+let type = undefined;
+let site = undefined;
 let position = undefined;
 let location = undefined;
+let minArgsLength = 5;
+let minMatchCount = undefined;
+
+let keys = undefined;
+let fullStackKeys = JobKeys.fullStackKeys;
+
 let jobsData = []; // Object {matchCount, matchMap}
 let sortedJobsData = [];
 let baseOnetURL = "https://www.onetonline.org";
-let fullStackOnetURL = "https://www.onetonline.org/link/localjobs/15-1254.00?zip="; // add zip at the end. "15-1254" represents the web developer job category
-let indeedCustomURL = "https://www.indeed.com/jobs?q=full++stack+developer&l=Detroit%2C+MI&from=searchOnHP&vjk=ba632b886e162fbe";
-let keys = undefined;
-let fullStackKeys = JobKeys.fullStackKeys
 
 let main = async () => {
 
@@ -42,12 +49,12 @@ let main = async () => {
         return;
     }
 
-    let supportedSites = ["onet", "indeed"];
-    let zipCode = undefined;
-    let type = undefined;
-    let position = undefined;
-    let location = undefined;
-    let site = undefined;
+    // let supportedSites = ["onet", "indeed"];
+    // let zipCode = undefined;
+    // let type = undefined;
+    // let position = undefined;
+    // let location = undefined;
+    // let site = undefined;
 
     if (!supportedSites.includes(process.argv[2])) {
         console.error(`Site ${process.argv[2]} is not supported!`);
@@ -68,7 +75,6 @@ let main = async () => {
     }
 
 
-
     if (process.argv.length > 4) {
         minMatchCount = process.argv[5];
     }
@@ -82,15 +88,6 @@ let main = async () => {
         console.log(site, location, position, minMatchCount);
     }
 
-    return;
-
-    if (minMatchCount != undefined) {
-        console.log(`getting jobs for ZIP : ${zipCode} of type : ${type} with min match count: ${minMatchCount}`);
-    }
-    else {
-        console.log(`getting jobs for ZIP : ${zipCode} of type : ${type}`);
-    }
-
     switch (type) {
         case "fullstack":
             keys = fullStackKeys;
@@ -101,7 +98,34 @@ let main = async () => {
             break;
     }
 
+    if (minMatchCount != undefined) {
+        console.log(`getting jobs for ZIP : ${zipCode} of type : ${type} with min match count: ${minMatchCount}`);
+    }
+    else {
+        console.log(`getting jobs for ZIP : ${zipCode} of type : ${type}`);
+    }
+
     console.log("fetching data, please wait!");
+
+    // testing
+
+    switch (site) {
+        case "onet":
+            await getOnetJobs();
+            break;
+        default:
+            console.error("An unknown error has occurend. Invalid site type!");
+            return;
+            break;
+    }
+
+
+    console.log(`Sorting job data by match count!`);
+    sortJobsData();
+    console.log(sortedJobsData);
+}
+
+let getOnetJobs = async () => {
 
     let response = undefined;
     let payload = undefined;
@@ -170,18 +194,14 @@ let main = async () => {
 
     for (let i = 0; i < jobURLs.length; i++) {
 
-        let jobMatch = await getJobMatchCount(jobURLs[i]);
+        let jobMatch = await getOnetJobMatchCount(jobURLs[i]);
         highestMatchCount = Math.max(jobMatch.matchCount, highestMatchCount);
         jobsData.push(jobMatch);
     }
 
-    console.log(`Sorting job data by match count!`);
-
-    sortJobsData();
-    console.log(sortedJobsData);
 }
 
-let getJobMatchCount = async (jobURL) => {
+let getOnetJobMatchCount = async (jobURL) => {
 
     if (!keys) {
         return;
