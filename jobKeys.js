@@ -3,6 +3,13 @@ let fullStackKeys = [
     "full-stack",
     "web dev",
     "react",
+    "rdbms",
+    "relational",
+    "sql",
+    "nosql",
+    "firestore",
+    "postgres",
+    "mysql",
     "mongodb",
     "jenkins",
     "html",
@@ -43,6 +50,13 @@ let fullStackKeys = [
     "flutter",
     "react native",
     "react-native",
+    "xml",
+    "json",
+    "postman",
+    "microsoft office",
+    "electron",
+    "tailwind",
+    "socket.io",
 ];
 
 module.exports = { fullStackKeys };
