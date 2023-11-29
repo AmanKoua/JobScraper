@@ -8,8 +8,8 @@
             node index.js indeed {position} {location} {{minMatchCount (optional)}}
 
         examples :
-            node index.js onet 48323 fullstack
-            node index.js onet 48323 fullstack 15
+            node index.js onet 82801 fullstack
+            node index.js onet 82801 fullstack 15
             node index.js indeed {position} {location} {{minMatchCount (optional)}}
 
 
@@ -25,10 +25,13 @@ var JobKeys = require("./jobKeys.js");
 
 let minArgsLength = 5;
 let minMatchCount = undefined;
+let position = undefined;
+let location = undefined;
 let jobsData = []; // Object {matchCount, matchMap}
 let sortedJobsData = [];
 let baseOnetURL = "https://www.onetonline.org";
 let fullStackOnetURL = "https://www.onetonline.org/link/localjobs/15-1254.00?zip="; // add zip at the end. "15-1254" represents the web developer job category
+let indeedCustomURL = "https://www.indeed.com/jobs?q=full++stack+developer&l=Detroit%2C+MI&from=searchOnHP&vjk=ba632b886e162fbe";
 let keys = undefined;
 let fullStackKeys = JobKeys.fullStackKeys
 
@@ -46,21 +49,39 @@ let main = async () => {
     let location = undefined;
     let site = undefined;
 
-    if (!supportedSites.includes(process.argv[3])) {
-        console.error(`Site ${process.argv[3]} is not supported!`);
+    if (!supportedSites.includes(process.argv[2])) {
+        console.error(`Site ${process.argv[2]} is not supported!`);
     }
     else {
-        site = process.argv[3];
+        site = process.argv[2];
     }
 
-    zipCode = process.argv[3];
-    type = process.argv[4];
+    switch (site) {
+        case "onet":
+            zipCode = process.argv[3];
+            type = process.argv[4];
+            break;
+        case "indeed":
+            position = process.argv[3];
+            location = process.argv[4];
+            break;
+    }
+
+
 
     if (process.argv.length > 4) {
         minMatchCount = process.argv[5];
     }
 
-    console.log(site, type, zipCode, position, location);
+    // TODO : Stopped here!
+
+    if (site == "onet") {
+        console.log(site, zipCode, type, minMatchCount);
+    }
+    else if (site == "indeed") {
+        console.log(site, location, position, minMatchCount);
+    }
+
     return;
 
     if (minMatchCount != undefined) {

@@ -1,0 +1,3 @@
+Example calls:
+
+    node index.js onet 48323 fullstack 16
