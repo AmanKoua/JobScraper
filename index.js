@@ -22,11 +22,12 @@
 
 let HTMLParser = require("node-html-parser");
 let onet = require("./onet.js");
+let indeed = require("./indeed.js");
 let JobKeys = require("./jobKeys.js");
 
 let baseOnetURL = "https://www.onetonline.org";
 let fullStackOnetURL = "https://www.onetonline.org/link/localjobs/15-1254.00?zip="; // add zip at the end. "15-1254" represents the web developer job category
-// let indeedCustomURL = "https://www.indeed.com/jobs"; // https://www.indeed.com/jobs?q=full++stack+developer&l=Detroit%2C+MI&from=searchOnHP&vjk=ba632b886e162fbe
+let baseIndeedURL = "https://www.indeed.com/jobs"; // https://www.indeed.com/jobs?q=full++stack+developer&l=Detroit%2C+MI
 
 let supportedSites = ["onet", "indeed"];
 let zipCode = undefined;
@@ -62,15 +63,14 @@ let main = async () => {
         case "onet":
             zipCode = process.argv[3];
             type = process.argv[4];
+            minMatchCount = process.argv[5];
             break;
         case "indeed":
-            position = process.argv[3];
-            location = process.argv[4];
+            type = process.argv[3]
+            position = process.argv[4];
+            location = process.argv[5];
+            minMatchCount = process.argv[6];
             break;
-    }
-
-    if (process.argv.length > 4) {
-        minMatchCount = process.argv[5];
     }
 
     if (site == "onet") {
@@ -100,10 +100,10 @@ let main = async () => {
     }
     else if (site == "indeed") {
         if (minMatchCount != undefined) {
-            console.log(`getting jobs for location : ${location} of type : ${type} with min match count: ${minMatchCount}`);
+            console.log(`getting jobs for location : ${location}, for position : ${position}, of type : ${type}, with min match count: ${minMatchCount}`);
         }
         else {
-            console.log(`getting jobs for location : ${location} of type : ${type}`);
+            console.log(`getting jobs for location : ${location}, for position : ${position}, of type : ${type}`);
         }
     }
 
@@ -114,6 +114,10 @@ let main = async () => {
     switch (site) {
         case "onet":
             await onet.getOnetJobs(fullStackOnetURL, zipCode, baseOnetURL, keys, jobsData);
+            break;
+        case "indeed":
+            await indeed.getIndeedJobs(baseIndeedURL, position, location, minMatchCount, keys);
+            return; // testing
             break;
         default:
             console.error("An unknown error has occurend. Invalid site type!");
