@@ -3,7 +3,7 @@
     Usage:
         format : node index.js {ZipCode} {KeySet} {minMatchCount (optional)}
         examples :
-             node index.js 48323 fullstack
+            node index.js 48323 fullstack
             node index.js 48323 fullstack 15
 
         -zipcode : your zip code
@@ -14,6 +14,7 @@
 */
 
 var HTMLParser = require("node-html-parser")
+var JobKeys = require("./jobKeys.js");
 
 let minArgsLength = 4;
 let minMatchCount = undefined;
@@ -23,51 +24,7 @@ let sortedJobsData = [];
 let baseURL = "https://www.onetonline.org";
 let fullStackURL = "https://www.onetonline.org/link/localjobs/15-1254.00?zip="; // add zip at the end
 let keys = undefined;
-let fullStackKeys = [
-    "full stack",
-    "full-stack",
-    "web dev",
-    "react",
-    "mongodb",
-    "jenkins",
-    "html",
-    "css",
-    "javascript",
-    "express",
-    "node",
-    "nodejs",
-    "node js",
-    "java",
-    "spring",
-    "spring boot",
-    "REST",
-    "REST API",
-    "frontend",
-    "backend",
-    "c++",
-    "python",
-    "tdd",
-    "test driven",
-    "test-driven-development",
-    "agile",
-    "scrum",
-    "unit",
-    "integration",
-    "cloud",
-    "google cloud platform",
-    "gcp",
-    "AWS",
-    "amazon web services",
-    "github",
-    "git",
-    "UML",
-    "mobile",
-    "mobile dev",
-    "dart",
-    "flutter",
-    "react native",
-    "react-native",
-];
+let fullStackKeys = JobKeys.fullStackKeys
 
 let main = async () => {
 
