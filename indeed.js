@@ -6,6 +6,8 @@
 
 */
 
+let HTMLParser = require("node-html-parser");
+
 let getIndeedJobs = async (baseIndeedURL, position, location, minMatchCount, keys) => {
     console.log("---------------");
     // console.log(baseIndeedURL, position, location, minMatchCount, keys);
@@ -14,6 +16,10 @@ let getIndeedJobs = async (baseIndeedURL, position, location, minMatchCount, key
     let encodedLocation = location;
     let encodedPosition = position;
     let encodedURL = undefined;
+    let payload = undefined;
+    let parsedPayload = undefined;
+    let jobCardClassTitle = "css-5lfssm eu4oa1w0"; // this is the class name used for job cards
+    let jobURLs = [];
 
     commaIdx = encodedLocation.indexOf(",");
 
@@ -30,6 +36,24 @@ let getIndeedJobs = async (baseIndeedURL, position, location, minMatchCount, key
     encodedURL = `${baseIndeedURL}?q=${encodedPosition}&l=${encodedLocation}`;
 
     console.log(encodedURL);
+
+    const response = await fetch("https://www.indeed.com/jobs?q=apple&l=West+Bloomfield+Township%2C+MI&vjk=a08f1066213d296d", {
+        method: "GET",
+    });
+
+    if (!response.ok) {
+        console.error("error fetching job page!");
+        console.log(response)
+        return;
+    }
+
+    payload = await response.text();
+    parsedPayload = HTMLParser.parse(payload);
+    jobURLs = parsedPayload.getElementsByTagName("a");
+
+    console.log(jobURLs);
+
+    // TODO : Stopped here. About to fetch indeed URL data!
 }
 
 exports.getIndeedJobs = getIndeedJobs;
