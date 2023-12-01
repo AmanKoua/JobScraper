@@ -37,9 +37,7 @@ let getIndeedJobs = async (baseIndeedURL, position, location, minMatchCount, key
 
     console.log(encodedURL);
 
-    const response = await fetch("https://www.indeed.com/jobs?q=apple&l=West+Bloomfield+Township%2C+MI&vjk=a08f1066213d296d", {
-        method: "GET",
-    });
+    const response = await fetch(encodedURL);
 
     if (!response.ok) {
         console.error("error fetching job page!");
